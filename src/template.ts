@@ -188,7 +188,7 @@ export const htmlTemplate = `<!DOCTYPE html>
     <!-- Online Users Card (Full Width) -->
     <div class="card full-width">
       <div class="card-header">
-        <h2 class="card-title">Online Users</h2>
+        <h2 class="card-title">在线玩家</h2>
         <span class="metric-value" id="ccu-value">{{ccu}}</span>
       </div>
       <div class="card-body">
@@ -202,7 +202,7 @@ export const htmlTemplate = `<!DOCTYPE html>
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">API Latency</h2>
-        <span class="metric-value">Normal</span>
+        <span class="metric-value" id="latency-level">{{latency-level}}</span>
       </div>
       <div class="card-body">
         <div class="chart-container" id="chart-latency">
@@ -215,11 +215,24 @@ export const htmlTemplate = `<!DOCTYPE html>
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">API Requests</h2>
-        <span class="metric-value">High</span>
+        <span class="metric-value" id="requests-level">{{requests-level}}</span>
       </div>
       <div class="card-body">
         <div class="chart-container" id="chart-requests">
           {{chart-requests}}
+        </div>
+      </div>
+    </div>
+
+    <!-- API Error Rate -->
+    <div class="card full-width">
+      <div class="card-header">
+        <h2 class="card-title">API Error Rate</h2>
+        <span class="metric-value" id="error-value">{{error-rate}}</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" id="chart-error-rate">
+          {{chart-error-rate}}
         </div>
       </div>
     </div>

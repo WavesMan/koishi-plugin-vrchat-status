@@ -23,6 +23,8 @@
 yarn add koishi-plugin-vrchat-status@latest
 ```
 
+- **确保您的`koishi-app`启用proxy代理，或部署在非中国大陆地区，否则可能无法获取数据源**
+
 ## 依赖要求
 - `koishi` ≥ `4.18.7`
 - 建议启用 `puppeteer` 服务用于 HTML 截图渲染（无该服务将无法生成图片）。

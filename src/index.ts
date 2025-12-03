@@ -42,6 +42,9 @@ class VrchatStatusService extends Service {
   svgs: Record<ChartKey, string> = {} as any
   graphs: { name: string; title: string; url: string; overlay?: string; filled?: boolean }[] = []
   lastCcu: string = 'Unknown'
+  lastErrorRate: string = '—'
+  latencyLevel: string = ''
+  requestsLevel: string = ''
   version: string = 'unknown'
   declare logger: Logger
   
@@ -165,9 +168,19 @@ class VrchatStatusService extends Service {
           }
         }
 
-        const svg = this.generateSvgChart((data as any), overlay as any, g.title, !!g.filled)
         const key = this.titleToKey(g.title)
-        if (key) map[key] = svg
+        const smallDecimals = key === 'api-latency' || key === 'api-requests'
+        const svg = this.generateSvgChart((data as any), overlay as any, g.title, !!g.filled, smallDecimals)
+        if (key) {
+          map[key] = svg
+          if (Array.isArray(data) && data.length > 0) {
+            const last = (data as any[])[(data as any[]).length - 1]
+            const v = Number(last?.[1])
+            if (key === 'api-error-rate' && !Number.isNaN(v)) this.lastErrorRate = v <= 1 ? `${(v * 100).toFixed(2)}%` : v.toFixed(2)
+            if (key === 'api-latency' && !Number.isNaN(v)) this.latencyLevel = this.levelFor(key, v)
+            if (key === 'api-requests' && !Number.isNaN(v)) this.requestsLevel = this.levelFor(key, v)
+          }
+        }
       } catch (e) {
         this.logger.warn('fetch data failed for %s: %o', g.title, e)
       }
@@ -181,7 +194,7 @@ class VrchatStatusService extends Service {
     return null
   }
 
-  generateSvgChart(data: any[], overlay?: any[] | null, title = '', filled = false) {
+  generateSvgChart(data: any[], overlay?: any[] | null, title = '', filled = false, smallDecimals = false) {
     if (!Array.isArray(data) || !data.length) return '<svg><text>无数据</text></svg>'
     const width = 800, height = 400
     const paddingLeft = 64, paddingRight = 24, paddingTop = 20, paddingBottom = 56
@@ -211,7 +224,8 @@ class VrchatStatusService extends Service {
       const y = toY(v)
       const line = `<line class="grid" x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}"/>`
       const tick = `<line class="axis" x1="${paddingLeft}" y1="${y}" x2="${paddingLeft - 6}" y2="${y}"/>`
-      const label = `<text class="label" x="${paddingLeft - 10}" y="${y + 4}" text-anchor="end">${Math.round(v)}</text>`
+      const labelVal = smallDecimals && v < 1 ? v.toFixed(2) : String(Math.round(v))
+      const label = `<text class="label" x="${paddingLeft - 10}" y="${y + 4}" text-anchor="end">${labelVal}</text>`
       return line + tick + label
     }).join('')
     const msFactor = maxTime < 1e12 ? 1000 : 1
@@ -263,15 +277,33 @@ class VrchatStatusService extends Service {
     const map: Record<string, ChartKey> = {
       '{{chart-users}}': 'online-users',
       '{{chart-latency}}': 'api-latency',
-      '{{chart-requests}}': 'api-requests'
+      '{{chart-requests}}': 'api-requests',
+      '{{chart-error-rate}}': 'api-error-rate'
     }
     
     for (const [placeholder, key] of Object.entries(map)) {
       const svg = this.svgs[key] || '<p>No Data</p>'
       html = html.replace(placeholder, svg)
     }
+    html = html.replace('{{error-rate}}', this.lastErrorRate)
+    html = html.replace('{{latency-level}}', this.latencyLevel || '—')
+    html = html.replace('{{requests-level}}', this.requestsLevel || '—')
     
     return html
+  }
+
+  levelFor(key: ChartKey, v: number): string {
+    if (key === 'api-latency') {
+      if (v < 0.25) return 'Normal'
+      if (v < 0.6) return 'Elevated'
+      return 'High'
+    }
+    if (key === 'api-requests') {
+      if (v < 0.3) return 'Low'
+      if (v < 0.7) return 'Medium'
+      return 'High'
+    }
+    return ''
   }
 
   loadVersion(): string {

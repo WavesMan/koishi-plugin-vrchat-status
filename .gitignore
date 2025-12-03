@@ -16,3 +16,8 @@ tsconfig.tsbuildinfo
 *.ntvs*
 *.njsproj
 *.sln
+
+
+koishi-docs/*
+svg/*
+index.html

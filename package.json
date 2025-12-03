@@ -1,7 +1,17 @@
 {
-  "name": "koishi-plugin-koishi-plugins-vrchat-status",
+  "name": "koishi-plugin-vrchat-status",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.2.0",
+  "contributors": [
+    "Waves_Man <bilibiliwavesman@gmail.com>"
+  ],
+  "homepage": "https://home.waveyo.cn",
+  "koishi": {
+    "description": {
+      "en": "Get the VRChat Status image",
+      "zh": "获取VRChat Status图片"
+    }
+  },
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -9,14 +19,16 @@
     "dist"
   ],
   "license": "MIT",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "gametool"
   ],
-  "devDependencies": {},
   "peerDependencies": {
     "koishi": "^4.18.7"
+  },
+  "dependencies": {
+    "sharp": "^0.33.2"
   }
 }

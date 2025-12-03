@@ -5,7 +5,11 @@
   "contributors": [
     "Waves_Man <bilibiliwavesman@gmail.com>"
   ],
-  "homepage": "https://home.waveyo.cn",
+  "homepage": "https://github.com/WavesMan/koishi-plugin-vrchat-status",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WavesMan/koishi-plugin-vrchat-status.git"
+  },
   "koishi": {
     "description": {
       "en": "Get the VRChat Status image",
